@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timestamp on Uploaded Image</title>
+    <style>
+        #output {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Timestamp on Uploaded Image</h1>
+    
+    <input type="file" id="uploadInput" accept="image/*">
+    <canvas id="canvas"></canvas>
+    
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('uploadInput').addEventListener('change', handleFileSelect);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        drawImageWithTimestamp(img);
+                    };
+                    img.src = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function drawImageWithTimestamp(img) {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size to match the image
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img, 0, 0);
+
+            const timestamp = `${new Date().toLocaleString()}`;
+            const alamat = `Manado, Sulawesi Utara`;
+            drawTimestamp(ctx, timestamp, alamat);
+
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '<p>Hasil:</p>';
+            const resultImg = new Image();
+            resultImg.src = canvas.toDataURL('image/png');
+            outputDiv.appendChild(resultImg);
+        }
+
+        function drawTimestamp(ctx, timestamp, alamat) {
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'white';
+
+            // Menghitung tinggi teks
+            const textHeight = 12;
+
+            // Menentukan posisi teks berdasarkan tinggi gambar
+            const timestampY = canvas.height - textHeight * 2;
+            const alamatY = canvas.height - textHeight;
+
+            ctx.fillText(timestamp, 20, timestampY);
+            ctx.fillText(alamat, 20, alamatY);
+        }
+    </script>
+</body>
+</html>
